@@ -1,0 +1,3 @@
+timestamp,host,user,source_ip,command_line
+2026-06-02T10:15:00Z,LIB-PC-01,jdoe,192.168.1.50,powershell.exe -ExecutionPolicy Bypass -EncodedCommand abc123
+2026-06-02T10:20:00Z,LIB-PC-02,asmith,192.168.1.51,notepad.exe
