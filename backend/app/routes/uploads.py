@@ -2,7 +2,7 @@ import csv
 import io
 
 from fastapi import APIRouter, UploadFile, File, HTTPException
-
+from app.mitre_mapper import enrich_alert
 from app.database import SessionLocal
 from app.models import Alert
 from app.detection_engine import run_detections
@@ -27,17 +27,21 @@ async def upload_csv(file: UploadFile = File(...)):
             raise HTTPException(status_code=400, detail="CSV file has no headers.")
 
         events = list(reader)
-        alerts = run_detections(events)
+        alerts = [enrich_alert(alert) for alert in run_detections(events)]
 
         db = SessionLocal()
 
         for alert in alerts:
             db_alert = Alert(
-                title=alert["title"],
-                severity=alert["severity"],
-                mitre_technique=alert["mitre_technique"],
-                recommended_action=alert["recommended_action"],
-            )
+    title=alert["title"],
+    severity=alert["severity"],
+    mitre_technique=alert["mitre_technique"],
+    technique_name=alert["technique_name"],
+    tactic=alert["tactic"],
+    description=alert["description"],
+    recommended_action=alert["recommended_action"],
+)
+            
 
             db.add(db_alert)
 

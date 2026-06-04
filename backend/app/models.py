@@ -10,4 +10,7 @@ class Alert(Base):
     title = Column(String)
     severity = Column(String)
     mitre_technique = Column(String)
+    technique_name = Column(String)
+    tactic = Column(String)
+    description = Column(String)
     recommended_action = Column(String)
