@@ -1,0 +1,6 @@
+timestamp,host,user,source_ip,event_type,status,group_name,command_line
+2026-06-02T10:15:00Z,LIB-PC-01,jdoe,192.168.1.50,process_start,success,,powershell.exe -ExecutionPolicy Bypass -EncodedCommand abc123
+2026-06-02T10:20:00Z,LIB-PC-02,asmith,192.168.1.51,login,failed,,
+2026-06-02T10:21:00Z,LIB-PC-02,asmith,192.168.1.51,login,failed,,
+2026-06-02T10:25:00Z,LIB-DC-01,svc-backup,192.168.1.10,user_added_to_group,success,Domain Admins,
+2026-06-02T10:30:00Z,LIB-PC-03,unknown,192.168.1.60,service_created,success,,sc create updater binPath= C:\Users\Public\updater.exe
