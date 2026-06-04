@@ -3,6 +3,8 @@ import io
 
 from fastapi import APIRouter, UploadFile, File, HTTPException
 
+from app.database import SessionLocal
+from app.models import Alert
 from app.detection_engine import run_detections
 
 
@@ -26,6 +28,21 @@ async def upload_csv(file: UploadFile = File(...)):
 
         events = list(reader)
         alerts = run_detections(events)
+
+        db = SessionLocal()
+
+        for alert in alerts:
+            db_alert = Alert(
+                title=alert["title"],
+                severity=alert["severity"],
+                mitre_technique=alert["mitre_technique"],
+                recommended_action=alert["recommended_action"],
+            )
+
+            db.add(db_alert)
+
+        db.commit()
+        db.close()
 
         return {
             "filename": file.filename,

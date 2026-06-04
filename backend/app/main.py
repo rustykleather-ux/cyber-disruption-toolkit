@@ -1,12 +1,14 @@
 from fastapi import FastAPI
+
+from app.database import Base, engine
+from app.models import Alert
 from app.routes import uploads, alerts
 
-app =FastAPI(
+Base.metadata.create_all(bind=engine)
+
+app = FastAPI(
     title="Cyber Disruption Toolkit",
-    description="A toolkit for simulating cyber disruptions in a controlled environment.",
-    version="0.1.0" \
-    "This API allows users to upload files, manage alerts, and simulate cyber disruptions for testing and training purposes.",
-    
+    version="0.2.0"
 )
 
 app.include_router(uploads.router)
