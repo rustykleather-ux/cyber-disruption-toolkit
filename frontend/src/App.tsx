@@ -18,9 +18,41 @@ type Alert = {
 
 function App() {
   const [alerts, setAlerts] = useState<Alert[]>([]);
+   const [file, setFile] = useState<File | null>(null);
+   const [uploadMessage, setUploadMessage] = useState("");
+
+  const fetchAlerts = async () => {
+  const response = await fetch("http://127.0.0.1:8000/alerts/");
+  const data = await response.json();
+  setAlerts(data);
+};
+
+const uploadFile = async () => {
+  if (!file) {
+    setUploadMessage("Please choose a CSV file first.");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const response = await fetch("http://127.0.0.1:8000/uploads/csv", {
+    method: "POST",
+    body: formData,
+  });
+
+  if (!response.ok) {
+    setUploadMessage("Upload failed.");
+    return;
+  }
+
+  setUploadMessage("CSV uploaded successfully.");
+  setFile(null);
+  await fetchAlerts();
+};
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/alerts/")
+    fetchAlerts()
       .then((response) => response.json())
       .then((data) => setAlerts(data))
       .catch((error) => console.error("Error fetching alerts:", error));
@@ -47,10 +79,26 @@ function App() {
           <p>Critical Risk</p>
         </div>
       </section>
+      <section className="upload-box">
+  <h2>Upload Security Log</h2>
 
+  <input
+    type="file"
+    accept=".csv"
+    onChange={(e) => {
+      if (e.target.files?.[0]) {
+        setFile(e.target.files[0]);
+      }
+    }}
+  />
+
+  <button onClick={uploadFile}>Upload CSV</button>
+
+  {uploadMessage && <p>{uploadMessage}</p>}
+</section>
       <section>
         <h2>Alerts</h2>
-
+      <h3>Alerts Loaded: {alerts.length}</h3>
         <table>
           <thead>
             <tr>
@@ -64,7 +112,7 @@ function App() {
               <th>Tactic</th>
             </tr>
           </thead>
-
+              
           <tbody>
             {alerts.map((alert) => (
               <tr key={alert.id}>
@@ -78,6 +126,18 @@ function App() {
                   {alert.mitre_technique} - {alert.technique_name}
                 </td>
                 <td>{alert.tactic}</td>
+                <td
+                  style={{
+                    color:
+                      alert.risk_score >= 90
+                        ? "red"
+                        : alert.risk_score >= 70
+                        ? "orange"
+                        : "goldenrod",
+                  }}
+                  >
+                  {alert.risk_score}
+                  </td>
               </tr>
             ))}
           </tbody>
